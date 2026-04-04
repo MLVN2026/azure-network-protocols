@@ -21,61 +21,100 @@ In this lab, I explored how network traffic flows between Azure Virtual Machines
 - Windows 10/11
 - Ubuntu Server 24.04
 
-<h2>High-Level Steps</h2>
+<h2>Lab Overview</h2>
 
-- Deployed and configured Windows and Ubuntu Virtual Machines in Microsoft Azure
-- Established remote access using RDP to manage the Windows VM
-- Installed and configured Wireshark to capture live network traffic
-- Generated traffic using protocols such as ICMP, DNS, and HTTP to analyze packet behavior
-- Applied protocol filters in Wireshark to isolate and inspect specific traffic types
-- Configured Network Security Group (NSG) rules to allow and deny traffic
-- Tested connectivity after rule changes to validate how NSGs impact network communication
+1. Create Windows and Ubuntu VMs in the same Virtual Network/Subnet.  
+2. Observe ICMP (ping) traffic between VMs.  
+3. Configure NSG rules to block/unblock ICMP.  
+4. Capture and analyze SSH traffic.  
+5. Capture DHCP traffic during IP renewal.  
+6. Capture DNS queries using nslookup.  
+7. Capture RDP traffic from Windows 10 VM.  
 
+
+# Step 1: Create Azure Virtual Machines
+
+1. Log into [Azure Portal](https://portal.azure.com/).
+2. Create a **Resource Group**.
+3. Create a **Windows 11 VM**:
+   - Assign to previously created Resource Group
+   - Allow it to create a new Virtual Network and Subnet
+   - Enable RDP
+4. Create an **Ubuntu VM**:
+   - Assign to the same Resource Group and Virtual Network as Windows 10 VM
+   - Authentication: Username/Password
+   - Ensure same Subnet
+5. Verify both VMs are in the same Virtual Network/Subnet.
 
 
 
 <header>
   <h1>Network Traffic Analysis Lab</h1>
-  <p>DHCP, DNS, and SSH Packet Inspection using Wireshark</p>
+  <p>ICMP, DHCP, DNS, and SSH Packet Inspection using Wireshark</p>
 </header>
 
 <div class="container">
 
-  <div class="section">
-    <h2>1. DHCP Traffic Analysis</h2>
+
+<div class="section">
+    <h2>1. ICMP Traffic Analysis</h2>
     <p>
-      This section demonstrates the DHCP handshake process including 
+    Installed Wireshark inside of Windows VM and filtered for ICMP traffic to find the private IP of my Linux VM (echo request/replies).
+      </p>
+    <img width="1925" height="1077" alt="image" src="https://github.com/user-attachments/assets/409d4bf0-1896-4d75-b7ab-ce3457ce3805" />
+    
+  1. Initiate continuous ping from Windows 10 VM to Ubuntu VM:
+  2. Open **NSG** associated with Ubuntu VM.
+  3. Disable **inbound ICMP traffic**.
+  4. Observe ping failures in Windows 10 VM (Wireshark + command line).
+  5. Re-enable inbound ICMP traffic.
+  6. Verify ping resumes successfully.
+  7. Stop continuous ping: `Ctrl + C`.
+
+    
+
+
+  <div class="section">
+    <h2>2. DHCP Traffic Analysis</h2>
+    <p>
+      This section demonstrates the DHCP handshake process by initiating "ipconfig/renew" including 
       <code>Discover</code>, <code>Offer</code>, <code>Request</code>, and <code>ACK</code>.
     </p>
-    <img src="images/dhcp.png" alt="DHCP Capture">
-    <p class="caption">
+    <img width="1894" height="945" alt="image" src="https://github.com/user-attachments/assets/1f664350-4bc7-48d8-9e89-4d33b227f35f" />
+
       Wireshark capture showing DHCP release, discover, offer, request, and acknowledgment packets.
-    </p>
+   
   </div>
 
   <div class="section">
-    <h2>2. DNS Query Analysis</h2>
+    <h2>3. DNS Query Analysis</h2>
     <p>
       DNS queries and responses were captured while resolving a domain name using 
       <code>nslookup</code>.
     </p>
-    <img src="images/dns.png" alt="DNS Capture">
-    <p class="caption">
+    <img width="1908" height="1017" alt="image" src="https://github.com/user-attachments/assets/48c61a26-295e-4260-a914-bcc1e65e9aad" />
+
       DNS traffic showing queries and responses, including resolved IP addresses.
-    </p>
+    
   </div>
 
+   
+
+
   <div class="section">
-    <h2>3. SSH Traffic Analysis</h2>
+    <h2>4. SSH Traffic Analysis</h2>
     <p>
       SSH traffic was captured during a secure remote login session. Packets are encrypted, 
       demonstrating secure communication over port 22.
     </p>
-    <img src="images/ssh.png" alt="SSH Capture">
-    <p class="caption">
+    <img width="1888" height="1008" alt="image" src="https://github.com/user-attachments/assets/3d74c693-dab1-40cb-abdf-c7ccc3b28e15" />
+
       Encrypted SSH packets captured in Wireshark along with a successful remote login session.
-    </p>
+    
   </div>
+
+
+
 
 </div>
 
